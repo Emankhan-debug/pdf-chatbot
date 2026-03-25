@@ -15,47 +15,70 @@ st.set_page_config(
 )
 
 # ================================
-# CUSTOM CSS
+# CUSTOM CSS - Light theme like ChatGPT
 # ================================
 st.markdown("""
 <style>
-    .stApp { background-color: #0f172a; }
+    .stApp { background-color: #f9f9f9; }
+    
     .user-message {
-        background-color: #1e3a5f;
-        color: #e2e8f0;
+        background-color: #2563eb;
+        color: #ffffff;
         padding: 12px 16px;
-        border-radius: 12px 0px 12px 12px;
+        border-radius: 18px 18px 4px 18px;
         margin: 8px 0;
-        margin-left: 20%;
+        margin-left: 25%;
         font-size: 14px;
         line-height: 1.5;
     }
+    
     .bot-message {
-        background-color: #1e293b;
-        color: #cbd5e1;
+        background-color: #ffffff;
+        color: #1a1a1a;
         padding: 12px 16px;
-        border-radius: 0px 12px 12px 12px;
+        border-radius: 18px 18px 18px 4px;
         margin: 8px 0;
-        margin-right: 20%;
+        margin-right: 25%;
         font-size: 14px;
         line-height: 1.5;
-        border-left: 3px solid #6366f1;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
+    
     .pdf-info {
-        background-color: #1e293b;
+        background-color: #f0fdf4;
         padding: 12px 16px;
         border-radius: 8px;
         border-left: 3px solid #22c55e;
-        color: #86efac;
+        color: #166534;
         font-size: 13px;
         margin: 8px 0;
     }
+    
     .stButton button {
-        background-color: #6366f1 !important;
+        background-color: #2563eb !important;
         color: white !important;
         border-radius: 20px !important;
         border: none !important;
+        font-weight: 500 !important;
     }
+    
+    .stTextInput input {
+        border-radius: 20px !important;
+        border: 1px solid #e5e7eb !important;
+        background-color: #ffffff !important;
+        padding: 10px 16px !important;
+    }
+    
+    .stFileUploader {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 8px;
+    }
+    
+    h1 { color: #1a1a1a !important; }
+    p { color: #6b7280 !important; }
+    
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
 </style>
@@ -67,10 +90,9 @@ st.markdown("""
 try:
     API_KEY = st.secrets["GROQ_API_KEY"]
 except:
-    API_KEY = " "
+    API_KEY = ""
 
 client = Groq(api_key=API_KEY)
-
 
 # ================================
 # DATABASE
@@ -101,7 +123,7 @@ def save_message(pdf_name, role, message):
     conn.close()
 
 # ================================
-# PDF READING FUNCTION
+# PDF READING
 # ================================
 def read_pdf(uploaded_file):
     pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
@@ -121,7 +143,7 @@ def get_ai_response(question, pdf_text, chat_history):
     
     IMPORTANT RULES:
     - Only answer based on the PDF content provided
-    - If the answer is not in the PDF, say "I couldn't find this in the document"
+    - If the answer is not in the PDF say "I couldn't find this in the document"
     - Always mention which page the information came from when possible
     - Be concise and clear
     
@@ -164,8 +186,8 @@ if "pdf_name" not in st.session_state:
 # ================================
 st.markdown("""
 <div style='text-align:center; padding: 20px 0'>
-    <h1 style='color:#e2e8f0'>📄 PDF Chatbot</h1>
-    <p style='color:#94a3b8'>Upload any PDF and ask questions from it</p>
+    <h1 style='color:#1a1a1a; font-size:32px'>📄 PDF Chatbot</h1>
+    <p style='color:#6b7280; font-size:15px'>Upload any PDF and ask questions from it</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -186,8 +208,7 @@ if uploaded_file:
 
     st.markdown(f"""
     <div class="pdf-info">
-        ✅ PDF loaded: <strong>{st.session_state.pdf_name}</strong>
-        — Now ask any question!
+        ✅ <strong>{st.session_state.pdf_name}</strong> loaded successfully — Ask me anything!
     </div>
     """, unsafe_allow_html=True)
 
@@ -205,7 +226,7 @@ if uploaded_file:
             placeholder="Ask anything about your PDF...",
             label_visibility="collapsed"
         )
-        submit = st.form_submit_button("Ask ➤")
+        submit = st.form_submit_button("Send ➤")
 
     if submit and question:
         with st.spinner("Reading document..."):
@@ -225,8 +246,14 @@ if uploaded_file:
 
 else:
     st.markdown("""
-    <div style='text-align:center; padding:40px; color:#475569'>
-        <h3>👆 Upload a PDF to get started</h3>
-        <p>Works with any PDF — books, contracts, menus, manuals</p>
+    <div style='text-align:center; padding:40px; color:#6b7280'>
+        <h3 style='color:#1a1a1a'>👆 Upload a PDF to get started</h3>
+        <p>Works with any PDF — textbooks, contracts, menus, manuals</p>
+        <div style='margin-top:20px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap'>
+            <span style='background:#eff6ff; color:#2563eb; padding:6px 14px; border-radius:20px; font-size:13px'>📚 Textbooks</span>
+            <span style='background:#f0fdf4; color:#166534; padding:6px 14px; border-radius:20px; font-size:13px'>📋 Contracts</span>
+            <span style='background:#fef9c3; color:#854d0e; padding:6px 14px; border-radius:20px; font-size:13px'>🍽️ Menus</span>
+            <span style='background:#fdf4ff; color:#7e22ce; padding:6px 14px; border-radius:20px; font-size:13px'>📖 Manuals</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
